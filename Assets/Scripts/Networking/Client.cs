@@ -153,6 +153,16 @@ public class Client : MonoBehaviour
 
             return false;
         }
+
+        private void Disconnect()
+        {
+            Instance.Disconnect();
+
+            Stream = null;
+            ReceiveData = null;
+            ReceiveBuffer = null;
+            Socket = null;
+        }
     }
 
     public class UDP
@@ -216,7 +226,7 @@ public class Client : MonoBehaviour
         {
             using (var packet = new Packet(data))
             {
-                var packetLength = packet.Length();
+                var packetLength = packet.ReadInt();
                 data = packet.ReadBytes(packetLength);
             }
 

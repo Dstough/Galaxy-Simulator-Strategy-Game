@@ -9,16 +9,16 @@ namespace GalaxyServer.Networking
     public enum ServerPackets
     {
         welcome = 1,
-        spawnPlayer,
-        playerPosition,
-        playerRotation,
+        spawnPlayer = 2,
+        playerPosition = 3,
+        playerRotation = 4,
     }
 
     /// <summary>Sent from client to server.</summary>
     public enum ClientPackets
     {
         welcomeReceived = 1,
-        playerMovement
+        playerMovement = 2
     }
 
     public class Packet : IDisposable
