@@ -21,7 +21,7 @@ public class ClientSend : MonoBehaviour
 
     public static void WelcomeRecieved()
     {
-        using (var packet = new Packet((int)ClientPackets.welcomeReceived))
+        using (var packet = new Packet((int)ClientPackets.WelcomeReceived))
         {
             packet.Write(Client.Instance.Id);
             packet.Write(UIManager.Instance.UserNameField.text);
@@ -31,7 +31,7 @@ public class ClientSend : MonoBehaviour
 
     public static void PlayerMovement(bool[] inputs)
     {
-        using (var packet = new Packet((int)ClientPackets.playerMovement))
+        using (var packet = new Packet((int)ClientPackets.PlayerMovement))
         {
             packet.Write(inputs.Length);
             

@@ -18,6 +18,7 @@ public class Client : MonoBehaviour
 
     private delegate void PacketHandler(Packet packet);
     private static Dictionary<int, PacketHandler> PacketHandlers;
+    private bool _isConnected = false;
 
     private void Awake()
     {
@@ -33,9 +34,15 @@ public class Client : MonoBehaviour
         Udp = new UDP();
     }
 
+    private void OnApplicationQuit()
+    {
+        Disconnect();
+    }
+
     public void ConnectToServer()
     {
         InitializeClientData();
+        _isConnected = true;
         Tcp.Connect();
     }
 
@@ -45,6 +52,7 @@ public class Client : MonoBehaviour
         private Packet ReceiveData;
         private NetworkStream Stream;
         private byte[] ReceiveBuffer;
+
 
         public void Connect()
         {
@@ -92,7 +100,7 @@ public class Client : MonoBehaviour
 
                 if (byteLength <= 0)
                 {
-                    //TODO: disconnect
+                    Disconnect();
                     return;
                 }
 
@@ -107,6 +115,7 @@ public class Client : MonoBehaviour
             catch (Exception ex)
             {
                 Debug.Log($"Error receiving TCP data: {ex}");
+                Disconnect();
             }
         }
 
@@ -209,7 +218,7 @@ public class Client : MonoBehaviour
 
                 if (data.Length < 4)
                 {
-                    //TODO: disconnect
+                    Disconnect();
                     return;
                 }
 
@@ -217,8 +226,8 @@ public class Client : MonoBehaviour
             }
             catch (Exception ex)
             {
-                //TODO: Disconnect
                 Debug.Log($"Error reading UDP data from server: {ex}");
+                Disconnect();
             }
         }
 
@@ -239,17 +248,36 @@ public class Client : MonoBehaviour
                 }
             });
         }
+
+        private void Disconnect()
+        {
+            Instance.Disconnect();
+
+            EndPoint = null;
+            Socket = null;
+        }
     }
 
     private void InitializeClientData()
     {
         PacketHandlers = new Dictionary<int, PacketHandler>()
         {
-            { (int)ServerPackets.welcome, ClientHandle.Welcome },
-            { (int)ServerPackets.spawnPlayer, ClientHandle.SpawnPlayer },
-            { (int)ServerPackets.playerPosition, ClientHandle.PlayerPosition },
-            { (int)ServerPackets.playerRotation, ClientHandle.PlayerRotation }
+            { (int)ServerPackets.Welcome, ClientHandle.Welcome },
+            { (int)ServerPackets.SpawnPlayer, ClientHandle.SpawnPlayer },
+            { (int)ServerPackets.PlayerPosition, ClientHandle.PlayerPosition },
+            { (int)ServerPackets.PlayerRotation, ClientHandle.PlayerRotation }
         };
-        Debug.Log($"Initialized packets.");
+    }
+    
+    private void Disconnect()
+    {
+        if (_isConnected)
+        {
+            _isConnected = false;
+            Tcp.Socket.Close();
+            Udp.Socket.Close();
+
+            Debug.Log("Disconnected from server");
+        }
     }
 }

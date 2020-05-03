@@ -32,7 +32,7 @@ public class ClientHandle : MonoBehaviour
         var id = packet.ReadInt();
         var position = packet.ReadVector3();
 
-        GameManager.Players[id].transform.position = position;
+        GameManager.Players[id].transform.position = Vector3.MoveTowards(GameManager.Players[id].transform.position, position, 30f);
     }
 
     public static void PlayerRotation(Packet packet)
