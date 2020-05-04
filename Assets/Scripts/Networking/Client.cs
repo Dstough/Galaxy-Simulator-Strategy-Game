@@ -53,7 +53,6 @@ public class Client : MonoBehaviour
         private NetworkStream Stream;
         private byte[] ReceiveBuffer;
 
-
         public void Connect()
         {
             Socket = new TcpClient()
